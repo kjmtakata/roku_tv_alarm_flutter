@@ -31,7 +31,9 @@ class AlarmPageState extends State<AlarmPage> {
                   initialTime: alarmTime,
                 );
                 future.then((TimeOfDay timeOfDay) {
-                  alarmTime = timeOfDay;
+                  setState(() {
+                    alarmTime = timeOfDay;
+                  });
                 });
               },
             ),
