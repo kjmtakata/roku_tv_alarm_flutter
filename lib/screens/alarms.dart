@@ -32,7 +32,7 @@ class _AlarmsPageState extends State<AlarmsPage> {
             Alarm alarm = alarms.getByPosition(i);
             return ListTile(
               title: Text(
-                alarm.toString(),
+                alarm.time.format(context),
               ),
             );
           }

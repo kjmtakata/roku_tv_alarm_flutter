@@ -14,6 +14,7 @@ class AlarmPage extends StatefulWidget {
 class AlarmPageState extends State<AlarmPage> {
   final _formKey = GlobalKey<FormState>();
   TimeOfDay alarmTime = TimeOfDay.now();
+
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(

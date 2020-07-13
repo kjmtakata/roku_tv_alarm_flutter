@@ -6,7 +6,11 @@ import 'models/alarms.dart';
 void main() {
   runApp(
     ChangeNotifierProvider(
-      create: (context) => AlarmsModel(),
+      create: (context) {
+        AlarmsModel alarmsModel = AlarmsModel();
+        alarmsModel.load();
+        return alarmsModel;
+      },
       child: App(),
     ),
   );
