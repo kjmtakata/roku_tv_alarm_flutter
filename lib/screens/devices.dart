@@ -32,12 +32,12 @@ class _DevicesPageState extends State<DevicesPage> {
         itemBuilder: (context, i) {
           if (i < this.discoveredDevices.length) {
             List<String> keys = discoveredDevices.keys.toList();
-            String title = discoveredDevices[keys[i]].friendlyName;
+            Device device = discoveredDevices[keys[i]];
             return ListTile(
-              title: Text(title),
+              title: Text(device.friendlyName),
               onTap: () {
                 discoverer.stop();
-                Navigator.pop(context);
+                Navigator.pop(context, device);
               },
             );
           }

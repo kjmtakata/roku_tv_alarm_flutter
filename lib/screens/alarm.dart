@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:android_alarm_manager/android_alarm_manager.dart';
 import 'package:rokutvalarmflutter/screens/devices.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import "package:upnp/upnp.dart";
 import '../models/alarms.dart';
 import '../models/alarm.dart';
 
@@ -30,6 +31,7 @@ class AlarmPageForm extends StatefulWidget {
 class AlarmPageState extends State<AlarmPageForm> {
   final _formKey = GlobalKey<FormState>();
   TimeOfDay alarmTime = TimeOfDay.now();
+  Device device;
 
   // The callback for our alarm
   static Future<void> alarmCallback(int alarmId) async {
@@ -81,13 +83,15 @@ class AlarmPageState extends State<AlarmPageForm> {
           ),
           RaisedButton(
             child: Text("Discover Devices"),
-            onPressed: () {
-              Navigator.push(
+            onPressed: () async {
+              device = await Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => DevicesPage()),
               );
+              setState(() {});
             }
           ),
+          Text(device?.friendlyName ?? "Not Selected")
         ],
       ),
     );
