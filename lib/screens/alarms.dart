@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:android_alarm_manager/android_alarm_manager.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 import '../models/alarms.dart';
 import '../models/alarm.dart';
 import 'alarm.dart';
@@ -10,36 +12,46 @@ class AlarmsPage extends StatefulWidget {
 }
 
 class _AlarmsPageState extends State<AlarmsPage> {
+  RefreshController _refreshController =
+    RefreshController(initialRefresh: true);
+
+  @override
+  void initState() {
+    super.initState();
+    AndroidAlarmManager.initialize();
+  }
+
+  void _onRefresh() async{
+    Provider.of<AlarmsModel>(context, listen: false).load();
+    _refreshController.refreshCompleted();
+  }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
       appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
         title: Text('Alarms'),
       ),
-      body: ListView.builder(
-        itemBuilder: (context, i) {
-          AlarmsModel alarms = Provider.of<AlarmsModel>(context);
-          if (i < alarms.length()) {
-            Alarm alarm = alarms.getByPosition(i);
-            return ListTile(
-              title: Text(
-                alarm.time.format(context),
-              ),
-            );
-          }
-          else {
-            return null;
-          }
-        },
+      body: SmartRefresher(
+        enablePullDown: true,
+        controller: _refreshController,
+        onRefresh: _onRefresh,
+        child: ListView.builder(
+          itemBuilder: (context, i) {
+            AlarmsModel alarms = Provider.of<AlarmsModel>(context);
+            if (i < alarms.length()) {
+              Alarm alarm = alarms.getByPosition(i);
+              return ListTile(
+                title: Text(
+                  alarm.time.format(context),
+                ),
+              );
+            }
+            else {
+              return null;
+            }
+          },
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -50,7 +62,7 @@ class _AlarmsPageState extends State<AlarmsPage> {
         },
         tooltip: 'Add Alarm',
         child: Icon(Icons.add_alarm),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      ),
     );
   }
 }

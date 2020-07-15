@@ -4,13 +4,10 @@ import 'screens/alarms.dart';
 import 'models/alarms.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(
     ChangeNotifierProvider(
-      create: (context) {
-        AlarmsModel alarmsModel = AlarmsModel();
-        alarmsModel.load();
-        return alarmsModel;
-      },
+      create: (context) => AlarmsModel(),
       child: App(),
     ),
   );
