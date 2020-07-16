@@ -14,18 +14,18 @@ class AlarmsModel with ChangeNotifier {
     await prefs.reload();
     for(String key in prefs.getKeys()) {
       this.alarms.add(Alarm.fromJson(jsonDecode(prefs.getString(key))));
-      print("alarm: " + key);
     }
     notifyListeners();
-    print("finished loading");
   }
 
   void add(Alarm alarm) async {
     this.alarms.add(alarm);
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setString(alarm.id.toString(), jsonEncode(alarm));
+    await prefs.setString(alarm.id.toString(), jsonEncode(alarm));
     notifyListeners();
   }
+
+  Alarm getById(int id) => alarms.firstWhere((alarm) => alarm.id == id);
 
   Alarm getByPosition(int i) => this.alarms[i];
 

@@ -13,14 +13,17 @@ class _DevicesPageState extends State<DevicesPage> {
   Widget build(BuildContext context) {
     var discoverer = new DeviceDiscoverer();
     discoverer.start(ipv6: false).then((value) {
-      discoverer.quickDiscoverClients().listen((event) {
-        event.getDevice().then((device) {
-          if (mounted && !discoveredDevices.containsKey(device.uuid)) {
-            setState(() {
-              discoveredDevices.putIfAbsent(device.uuid, () => device);
-            });
-          }
-        });
+      discoverer.quickDiscoverClients(query: "roku:ecp").listen((event) {
+        print(event.toString());
+        if (mounted && !discoveredDevices.containsKey(event.usn)) {
+          event.getDevice().then((device) {
+            if (mounted) {
+              setState(() {
+                discoveredDevices.putIfAbsent(event.usn, () => device);
+              });
+            }
+          });
+        }
       });
     });
 
@@ -35,6 +38,7 @@ class _DevicesPageState extends State<DevicesPage> {
             Device device = discoveredDevices[keys[i]];
             return ListTile(
               title: Text(device.friendlyName),
+              subtitle: Text("Model: ${device.modelName}"),
               onTap: () {
                 discoverer.stop();
                 Navigator.pop(context, device);

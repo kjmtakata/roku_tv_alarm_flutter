@@ -41,9 +41,11 @@ class _AlarmsPageState extends State<AlarmsPage> {
             AlarmsModel alarms = Provider.of<AlarmsModel>(context);
             if (i < alarms.length()) {
               Alarm alarm = alarms.getByPosition(i);
-              return ListTile(
-                title: Text(
-                  alarm.time.format(context),
+              return Card(
+                child: ListTile(
+                  title: Text(alarm.time.format(context)),
+                  subtitle: Text(alarm.deviceName ?? ""),
+                  trailing: Text("Channel: " + (alarm.channel ?? "")),
                 ),
               );
             }
