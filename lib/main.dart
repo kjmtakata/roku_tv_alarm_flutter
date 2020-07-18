@@ -17,6 +17,10 @@ var platformChannelSpecifics = NotificationDetails(
     IOSNotificationDetails()
 );
 
+Future<void> launchChannel(String url, String channel) async {
+  await http.post("${url}launch/tvinput.dtv?ch=$channel");
+}
+
 Future<void> alarmCallback(int alarmId) async {
   print("firing alarmId: " + alarmId.toString());
   SharedPreferences pref = await SharedPreferences.getInstance();
@@ -28,7 +32,7 @@ Future<void> alarmCallback(int alarmId) async {
     platformChannelSpecifics,
   );
 
-  await http.post("${alarm.deviceUrl}launch/tvinput.dtv?ch=${alarm.channel}");
+  await launchChannel(alarm.deviceUrl, alarm.channel);
 
   await pref.remove(alarmId.toString());
 }

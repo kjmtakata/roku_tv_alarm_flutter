@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:rokutvalarmflutter/main.dart';
 import 'package:rokutvalarmflutter/screens/devices.dart';
 import "package:upnp/upnp.dart" as upnp;
 import '../models/alarms.dart';
@@ -79,6 +80,12 @@ class AlarmPageState extends State<AlarmPage> {
             ),
           ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          launchChannel(device.url, channelController.text);
+        },
+        label: Text("Test"),
       ),
     );
   }
