@@ -6,6 +6,11 @@ import '../models/alarms.dart';
 import '../models/alarm.dart';
 import 'alarm.dart';
 
+
+enum AlarmAction {
+  delete
+}
+
 class AlarmsPage extends StatefulWidget {
   @override
   _AlarmsPageState createState() => _AlarmsPageState();
@@ -44,8 +49,20 @@ class _AlarmsPageState extends State<AlarmsPage> {
               return Card(
                 child: ListTile(
                   title: Text(alarm.time.format(context)),
-                  subtitle: Text(alarm.deviceName ?? ""),
-                  trailing: Text("Channel: " + (alarm.channel ?? "")),
+                  subtitle: Text("Channel: " + (alarm.channel ?? "") + " | " + (alarm.deviceName ?? "")),
+                  trailing: PopupMenuButton(
+                    itemBuilder: (_) => <PopupMenuItem<AlarmAction>>[
+                      new PopupMenuItem<AlarmAction>(
+                        child: const Text('Delete'),
+                        value: AlarmAction.delete,
+                      ),
+                    ],
+                    onSelected: (action) {
+                      if (action == AlarmAction.delete) {
+                        alarms.remove(alarm);
+                      }
+                    },
+                  ),
                 ),
               );
             }

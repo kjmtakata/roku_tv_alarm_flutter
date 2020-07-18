@@ -14,7 +14,6 @@ class _DevicesPageState extends State<DevicesPage> {
     var discoverer = new DeviceDiscoverer();
     discoverer.start(ipv6: false).then((value) {
       discoverer.quickDiscoverClients(query: "roku:ecp").listen((event) {
-        print(event.toString());
         if (mounted && !discoveredDevices.containsKey(event.usn)) {
           event.getDevice().then((device) {
             if (mounted) {
