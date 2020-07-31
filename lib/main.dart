@@ -17,15 +17,24 @@ var platformChannelSpecifics = NotificationDetails(
     IOSNotificationDetails()
 );
 
-Future<void> launchChannel(String deviceName, String deviceUrl, String channel) async {
+void showNotification(String deviceName, String channel, {String body}) {
   flutterLocalNotificationsPlugin.show(
     0,
-    'Activating Roku TV',
-    'Turning on $deviceName to channel $channel',
+    'Launching $deviceName to channel $channel',
+    body,
     platformChannelSpecifics,
   );
+}
 
-  await http.post("${deviceUrl}launch/tvinput.dtv?ch=$channel");
+Future<void> launchChannel(String deviceName, String deviceUrl, String channel) async {
+  try {
+    http.Response response = await http.post(
+        "http://192.168.1.26:8060/launch/tvinput.dtv?ch=$channel");
+    showNotification(deviceName, channel, body: response.statusCode != 200 ?
+      "Failed with response code ${response.statusCode}" : "");
+  } catch (err) {
+    showNotification(deviceName, channel, body: err.toString());
+  }
 }
 
 Future<void> alarmCallback(int alarmId) async {
