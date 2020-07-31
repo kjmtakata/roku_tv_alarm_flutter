@@ -17,22 +17,23 @@ var platformChannelSpecifics = NotificationDetails(
     IOSNotificationDetails()
 );
 
-Future<void> launchChannel(String url, String channel) async {
-  await http.post("${url}launch/tvinput.dtv?ch=$channel");
+Future<void> launchChannel(String deviceName, String deviceUrl, String channel) async {
+  flutterLocalNotificationsPlugin.show(
+    0,
+    'Activating Roku TV',
+    'Turning on $deviceName to channel $channel',
+    platformChannelSpecifics,
+  );
+
+  await http.post("${deviceUrl}launch/tvinput.dtv?ch=$channel");
 }
 
 Future<void> alarmCallback(int alarmId) async {
   print("firing alarmId: " + alarmId.toString());
   SharedPreferences pref = await SharedPreferences.getInstance();
   Alarm alarm = Alarm.fromJson(jsonDecode(pref.getString(alarmId.toString())));
-  flutterLocalNotificationsPlugin.show(
-    0,
-    'Activating Roku TV',
-    'Turning on ${alarm.deviceName} to channel ${alarm.channel}',
-    platformChannelSpecifics,
-  );
 
-  await launchChannel(alarm.deviceUrl, alarm.channel);
+  await launchChannel(alarm.deviceName, alarm.deviceUrl, alarm.channel);
 
   await pref.remove(alarmId.toString());
 }
