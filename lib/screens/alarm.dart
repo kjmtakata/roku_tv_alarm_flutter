@@ -139,7 +139,7 @@ class AlarmPageState extends State<AlarmPage> {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
-          launchChannel(device.url, channelController.text);
+          launchChannel(device.friendlyName, device.url, channelController.text);
         },
         label: Text("Test"),
       ),
