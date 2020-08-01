@@ -8,6 +8,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'models/alarm.dart';
+import 'package:android_alarm_manager/android_alarm_manager.dart';
 
 FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
   FlutterLocalNotificationsPlugin();
@@ -44,7 +45,26 @@ Future<void> alarmCallback(int alarmId) async {
 
   await launchChannel(alarm.deviceName, alarm.deviceUrl, alarm.channel);
 
-  await pref.remove(alarmId.toString());
+  if (alarm.isOneTime()) {
+    await pref.remove(alarm.id.toString());
+  } else {
+    DateTime now = DateTime.now();
+
+    DateTime alarmDateTime = DateTime(now.year, now.month,
+        now.day+1, alarm.time.hour, alarm.time.minute);
+
+    alarmDateTime = alarm.getNextAlarmDateTime(alarmDateTime);
+
+    AndroidAlarmManager.oneShotAt(alarmDateTime, alarm.id, alarmCallback,
+        exact: true, wakeup: true, rescheduleOnReboot: true).then((success) async {
+      flutterLocalNotificationsPlugin.show(
+        1,
+        'Set next alarm to $alarmDateTime',
+        success ? "Success" : "Failed",
+        platformChannelSpecifics,
+      );
+    });
+  }
 }
 
 Future<void> main() async {

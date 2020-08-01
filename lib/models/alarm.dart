@@ -45,4 +45,24 @@ class Alarm {
   };
 
   bool isDay(int day) => ((dayMap >> day) & 1) == 1;
+
+  bool isOneTime() {
+    for(int day = DateTime.monday; day <= DateTime.sunday; day++) {
+      if(isDay(day)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  DateTime getNextAlarmDateTime(DateTime dateTime) {
+    int i;
+    for (i = 0; i < 7; i++) {
+      if (isDay(((dateTime.weekday-1 + i) % 7) + 1)) {
+        break;
+      }
+    }
+    dateTime = dateTime.add(Duration(days: i));
+    return dateTime;
+  }
 }

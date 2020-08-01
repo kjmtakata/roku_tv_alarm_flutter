@@ -43,9 +43,9 @@ class AlarmPageState extends State<AlarmPage> {
           IconButton(
             icon: const Icon(Icons.save),
             onPressed: () {
-              int alarmId = Random().nextInt(pow(2, 31));
-              Provider.of<AlarmsModel>(context, listen: false).add(
-                  new Alarm(alarmId, alarmTime, device.uuid,
+              AlarmsModel alarmsModel = Provider.of<AlarmsModel>(context, listen: false);
+              alarmsModel.add(
+                  new Alarm(alarmsModel.getAlarmId(), alarmTime, device.uuid,
                       device.friendlyName, device.url, channelController.text,
                       isSelectedDay)
               );
