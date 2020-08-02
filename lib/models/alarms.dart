@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -22,11 +23,17 @@ class AlarmsModel with ChangeNotifier {
 
   void add(Alarm alarm) async {
     DateTime now = DateTime.now();
+
     DateTime alarmDateTime = DateTime(now.year, now.month,
         now.day, alarm.time.hour, alarm.time.minute);
     if (alarmDateTime.isBefore(now)) {
       alarmDateTime = alarmDateTime.add(Duration(days: 1));
     }
+
+    if (!alarm.isOneTime()) {
+      alarmDateTime = alarm.getNextAlarmDateTime(alarmDateTime);
+    }
+
     AndroidAlarmManager.oneShotAt(alarmDateTime, alarm.id, alarmCallback,
         exact: true, wakeup: true, rescheduleOnReboot: true).then((success) async {
       if (success) {
@@ -52,9 +59,18 @@ class AlarmsModel with ChangeNotifier {
     }
   }
 
-  Alarm getById(int id) => alarms.firstWhere((alarm) => alarm.id == id);
+  Alarm getById(int id) => alarms.firstWhere((alarm) => alarm.id == id, orElse: () => null);
 
   Alarm getByPosition(int i) => this.alarms[i];
 
   int length() => this.alarms.length;
+
+  int getAlarmId() {
+    int alarmId;
+    do {
+      alarmId = Random().nextInt(pow(2, 31));
+    } while (getById(alarmId) != null);
+
+    return alarmId;
+  }
 }
