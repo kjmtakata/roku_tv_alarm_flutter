@@ -47,6 +47,21 @@ class AlarmsModel with ChangeNotifier {
     });
   }
 
+  void update(Alarm alarm) async {
+    Alarm oldAlarm = getById(alarm.id);
+
+    if (alarm.isOneTime() == oldAlarm.isOneTime()) {
+      alarms.remove(oldAlarm);
+      alarms.add(alarm);
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString(alarm.id.toString(), jsonEncode(alarm));
+      notifyListeners();
+    } else {
+      remove(oldAlarm);
+      add(alarm);
+    }
+  }
+
   Future<bool> remove(Alarm alarm) async {
     if (await AndroidAlarmManager.cancel(alarm.id)) {
       SharedPreferences prefs = await SharedPreferences.getInstance();

@@ -8,14 +8,30 @@ import "package:upnp/upnp.dart" as upnp;
 import '../models/alarms.dart';
 import '../models/alarm.dart';
 
-class AlarmPage extends StatefulWidget {
+class AlarmPage extends StatelessWidget {
+  static const routeName = '/alarm';
+
   @override
-  AlarmPageState createState() {
-    return AlarmPageState();
+  Widget build(BuildContext context) {
+    AlarmsModel alarmsModel = Provider.of<AlarmsModel>(context, listen: false);
+    Alarm alarm = alarmsModel.getById(ModalRoute.of(context).settings.arguments);
+    return AlarmStatefulWidget(alarm);
   }
 }
 
-class AlarmPageState extends State<AlarmPage> {
+class AlarmStatefulWidget extends StatefulWidget {
+  final Alarm alarm;
+
+  AlarmStatefulWidget(this.alarm);
+
+  @override
+  AlarmStatefulWidgetState createState() {
+    return AlarmStatefulWidgetState(alarm);
+  }
+}
+
+class AlarmStatefulWidgetState extends State<AlarmStatefulWidget> {
+  Alarm alarm;
   TimeOfDay alarmTime = TimeOfDay.now();
   upnp.Device device;
   final channelController = TextEditingController();
@@ -29,6 +45,20 @@ class AlarmPageState extends State<AlarmPage> {
     DateTime.saturday: false,
   };
 
+  AlarmStatefulWidgetState(Alarm alarm) {
+    this.alarm = alarm;
+
+    if (alarm != null) {
+      alarmTime = alarm.time;
+      device = new upnp.Device();
+      device.url = alarm.deviceUrl;
+      device.friendlyName = alarm.deviceName;
+      device.uuid = alarm.deviceUuid;
+      channelController.text = alarm.channel;
+      isSelectedDay = alarm.getDayMap();
+    }
+  }
+
   void toggleIsSelectedDay(int day) {
     setState(() {
       isSelectedDay[day] = !isSelectedDay[day];
@@ -38,17 +68,24 @@ class AlarmPageState extends State<AlarmPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add Alarm'),
+        title: Text('${alarm == null ? 'Add' : 'Edit'} Alarm'),
         actions: <Widget>[
           IconButton(
             icon: const Icon(Icons.save),
             onPressed: () {
               AlarmsModel alarmsModel = Provider.of<AlarmsModel>(context, listen: false);
-              alarmsModel.add(
-                  new Alarm(alarmsModel.getAlarmId(), alarmTime, device.uuid,
-                      device.friendlyName, device.url, channelController.text,
-                      isSelectedDay)
-              );
+              int alarmId = this.alarm != null ? this.alarm.id : alarmsModel.getAlarmId();
+              Alarm alarm = new Alarm(alarmId, alarmTime,
+                  device.uuid, device.friendlyName, device.url,
+                  channelController.text, isSelectedDay);
+              if (this.alarm == null) {
+                print("add alarm");
+                alarmsModel.add(alarm);
+              } else {
+                print("update alarm");
+                alarmsModel.update(alarm);
+              }
+
               Navigator.pop(context);
             },
           ),

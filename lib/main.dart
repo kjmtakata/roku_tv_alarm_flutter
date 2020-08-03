@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:rokutvalarmflutter/screens/alarm.dart';
 import 'screens/alarms.dart';
 import 'models/alarms.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -92,6 +93,9 @@ class App extends StatelessWidget {
       title: 'Roku TV Alarm',
       theme: ThemeData(),
       home: AlarmsPage(),
+      routes: {
+        AlarmPage.routeName: (context) => AlarmPage(),
+      },
     );
   }
 }
