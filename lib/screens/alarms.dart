@@ -46,61 +46,70 @@ class _AlarmsPageState extends State<AlarmsPage> {
             AlarmsModel alarms = Provider.of<AlarmsModel>(context);
             if (i < alarms.length()) {
               Alarm alarm = alarms.getByPosition(i);
-              return Card(
-                child: Column(
-                  children: <Widget>[
-                    ListTile(
-                      title: Text(alarm.time.format(context)),
-                      subtitle: Text("Channel: " + (alarm.channel ?? "") + " | " + (alarm.deviceName ?? "")),
-                      trailing: PopupMenuButton(
-                        itemBuilder: (_) => <PopupMenuItem<AlarmAction>>[
-                          new PopupMenuItem<AlarmAction>(
-                            child: const Text('Delete'),
-                            value: AlarmAction.delete,
+              return GestureDetector(
+                onTap: () {
+                  Navigator.pushNamed(
+                    context,
+                    AlarmPage.routeName,
+                    arguments: alarm.id,
+                  );
+                },
+                child: Card(
+                  child: Column(
+                    children: <Widget>[
+                      ListTile(
+                        title: Text(alarm.time.format(context)),
+                        subtitle: Text("Channel: " + (alarm.channel ?? "") + " | " + (alarm.deviceName ?? "")),
+                        trailing: PopupMenuButton(
+                          itemBuilder: (_) => <PopupMenuItem<AlarmAction>>[
+                            new PopupMenuItem<AlarmAction>(
+                              child: const Text('Delete'),
+                              value: AlarmAction.delete,
+                            ),
+                          ],
+                          onSelected: (action) {
+                            if (action == AlarmAction.delete) {
+                              alarms.remove(alarm);
+                            }
+                          },
+                        ),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          DayOfWeekFilterWidget(
+                            label: "S",
+                            selected: alarm.isDay(DateTime.sunday),
+                          ),
+                          DayOfWeekFilterWidget(
+                            label: "M",
+                            selected: alarm.isDay(DateTime.monday),
+                          ),
+                          DayOfWeekFilterWidget(
+                            label: "T",
+                            selected: alarm.isDay(DateTime.tuesday),
+                          ),
+                          DayOfWeekFilterWidget(
+                            label: "W",
+                            selected: alarm.isDay(DateTime.wednesday),
+                          ),
+                          DayOfWeekFilterWidget(
+                            label: "T",
+                            selected: alarm.isDay(DateTime.thursday),
+                          ),
+                          DayOfWeekFilterWidget(
+                            label: "F",
+                            selected: alarm.isDay(DateTime.friday),
+                          ),
+                          DayOfWeekFilterWidget(
+                            label: "S",
+                            selected: alarm.isDay(DateTime.saturday),
                           ),
                         ],
-                        onSelected: (action) {
-                          if (action == AlarmAction.delete) {
-                            alarms.remove(alarm);
-                          }
-                        },
                       ),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        DayOfWeekFilterWidget(
-                          label: "S",
-                          selected: alarm.isDay(DateTime.sunday),
-                        ),
-                        DayOfWeekFilterWidget(
-                          label: "M",
-                          selected: alarm.isDay(DateTime.monday),
-                        ),
-                        DayOfWeekFilterWidget(
-                          label: "T",
-                          selected: alarm.isDay(DateTime.tuesday),
-                        ),
-                        DayOfWeekFilterWidget(
-                          label: "W",
-                          selected: alarm.isDay(DateTime.wednesday),
-                        ),
-                        DayOfWeekFilterWidget(
-                          label: "T",
-                          selected: alarm.isDay(DateTime.thursday),
-                        ),
-                        DayOfWeekFilterWidget(
-                          label: "F",
-                          selected: alarm.isDay(DateTime.friday),
-                        ),
-                        DayOfWeekFilterWidget(
-                          label: "S",
-                          selected: alarm.isDay(DateTime.saturday),
-                        ),
-                      ],
-                    ),
-                  ],
-                )
+                    ],
+                  ),
+                ),
               );
             }
             else {
@@ -111,9 +120,9 @@ class _AlarmsPageState extends State<AlarmsPage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.push(
+          Navigator.pushNamed(
             context,
-            MaterialPageRoute(builder: (context) => AlarmPage()),
+            AlarmPage.routeName,
           );
         },
         tooltip: 'Add Alarm',

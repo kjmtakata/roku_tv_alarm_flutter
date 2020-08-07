@@ -65,4 +65,14 @@ class Alarm {
     dateTime = dateTime.add(Duration(days: i));
     return dateTime;
   }
+
+  Map<int,bool> getDayMap() => <int,bool>{
+    DateTime.sunday: isDay(DateTime.sunday),
+    DateTime.monday: isDay(DateTime.monday),
+    DateTime.tuesday: isDay(DateTime.tuesday),
+    DateTime.wednesday: isDay(DateTime.wednesday),
+    DateTime.thursday: isDay(DateTime.thursday),
+    DateTime.friday: isDay(DateTime.friday),
+    DateTime.saturday: isDay(DateTime.saturday),
+  };
 }
