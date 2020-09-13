@@ -17,10 +17,8 @@ class _DevicesPageState extends State<DevicesPage> {
     discoverer.start(ipv6: false).then((value) {
       discoverer.quickDiscoverClients(query: "roku:ecp").listen((event) {
         if (mounted && !discoveredDevices.containsKey(event.usn)) {
-          print(event);
           event.getDevice().then((device) {
             if (mounted) {
-              print(device.deviceElement);
               setState(() {
                 discoveredDevices.putIfAbsent(event.usn, () => device);
               });
