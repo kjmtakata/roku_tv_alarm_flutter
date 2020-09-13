@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:android_alarm_manager/android_alarm_manager.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
@@ -108,9 +109,14 @@ class App extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark);
     return MaterialApp(
       title: 'Roku TV Alarm',
-      theme: ThemeData(),
+      theme: ThemeData(
+        brightness: Brightness.dark,
+        scaffoldBackgroundColor: Colors.black,
+        primaryColor: Colors.black,
+      ),
       home: AlarmsPage(),
       routes: {
         AlarmPage.routeName: (context) => AlarmPage(),
