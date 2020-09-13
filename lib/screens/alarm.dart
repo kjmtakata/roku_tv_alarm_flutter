@@ -1,12 +1,11 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import 'package:rokutvalarmflutter/main.dart';
+import 'package:rokutvalarmflutter/models/alarms.dart';
+import 'package:rokutvalarmflutter/models/alarm.dart';
+import 'package:rokutvalarmflutter/models/device.dart';
 import 'package:rokutvalarmflutter/screens/devices.dart';
-import "package:upnp/upnp.dart" as upnp;
-import '../models/alarms.dart';
-import '../models/alarm.dart';
 
 class AlarmPage extends StatelessWidget {
   static const routeName = '/alarm';
@@ -14,7 +13,8 @@ class AlarmPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     AlarmsModel alarmsModel = Provider.of<AlarmsModel>(context, listen: false);
-    Alarm alarm = alarmsModel.getById(ModalRoute.of(context).settings.arguments);
+    Alarm alarm =
+        alarmsModel.getById(ModalRoute.of(context).settings.arguments);
     return AlarmStatefulWidget(alarm);
   }
 }
@@ -33,9 +33,9 @@ class AlarmStatefulWidget extends StatefulWidget {
 class AlarmStatefulWidgetState extends State<AlarmStatefulWidget> {
   Alarm alarm;
   TimeOfDay alarmTime = TimeOfDay.now();
-  upnp.Device device;
+  Device device;
   final channelController = TextEditingController();
-  Map<int,bool> isSelectedDay = <int,bool>{
+  Map<int, bool> isSelectedDay = <int, bool>{
     DateTime.sunday: false,
     DateTime.monday: false,
     DateTime.tuesday: false,
@@ -50,10 +50,7 @@ class AlarmStatefulWidgetState extends State<AlarmStatefulWidget> {
 
     if (alarm != null) {
       alarmTime = alarm.time;
-      device = new upnp.Device();
-      device.url = alarm.deviceUrl;
-      device.friendlyName = alarm.deviceName;
-      device.uuid = alarm.deviceUuid;
+      device = new Device(alarm.deviceUsn, alarm.deviceName);
       channelController.text = alarm.channel;
       isSelectedDay = alarm.getDayMap();
     }
@@ -73,11 +70,12 @@ class AlarmStatefulWidgetState extends State<AlarmStatefulWidget> {
           IconButton(
             icon: const Icon(Icons.save),
             onPressed: () {
-              AlarmsModel alarmsModel = Provider.of<AlarmsModel>(context, listen: false);
-              int alarmId = this.alarm != null ? this.alarm.id : alarmsModel.getAlarmId();
-              Alarm alarm = new Alarm(alarmId, alarmTime,
-                  device.uuid, device.friendlyName, device.url,
-                  channelController.text, isSelectedDay);
+              AlarmsModel alarmsModel =
+                  Provider.of<AlarmsModel>(context, listen: false);
+              int alarmId =
+                  this.alarm != null ? this.alarm.id : alarmsModel.getAlarmId();
+              Alarm alarm = new Alarm(alarmId, alarmTime, device.usn,
+                  device.name, channelController.text, isSelectedDay);
               if (this.alarm == null) {
                 print("add alarm");
                 alarmsModel.add(alarm);
@@ -102,7 +100,7 @@ class AlarmStatefulWidgetState extends State<AlarmStatefulWidget> {
                 context: context,
                 initialTime: alarmTime,
               ).then((TimeOfDay timeOfDay) {
-                if(timeOfDay != null) {
+                if (timeOfDay != null) {
                   setState(() {
                     alarmTime = timeOfDay;
                   });
@@ -113,7 +111,7 @@ class AlarmStatefulWidgetState extends State<AlarmStatefulWidget> {
           ListTile(
             leading: const Icon(Icons.tv),
             title: const Text('Roku Device'),
-            subtitle: Text(device?.friendlyName ?? "Not Selected"),
+            subtitle: Text(device?.name ?? "Not Selected"),
             onTap: () async {
               device = await Navigator.push(
                 context,
@@ -176,7 +174,7 @@ class AlarmStatefulWidgetState extends State<AlarmStatefulWidget> {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
-          launchChannel(device.friendlyName, device.url, channelController.text);
+          launchChannel(device.usn, device.name, channelController.text);
         },
         label: Text("Test"),
       ),
