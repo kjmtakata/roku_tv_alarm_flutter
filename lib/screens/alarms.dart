@@ -1,15 +1,13 @@
+import 'package:android_alarm_manager/android_alarm_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:android_alarm_manager/android_alarm_manager.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import '../models/alarms.dart';
-import '../models/alarm.dart';
-import 'alarm.dart';
 
+import 'package:rokutvalarmflutter/models/alarm.dart';
+import 'package:rokutvalarmflutter/models/alarms.dart';
+import 'package:rokutvalarmflutter/screens/alarm.dart';
 
-enum AlarmAction {
-  delete
-}
+enum AlarmAction { delete }
 
 class AlarmsPage extends StatefulWidget {
   @override
@@ -18,7 +16,7 @@ class AlarmsPage extends StatefulWidget {
 
 class _AlarmsPageState extends State<AlarmsPage> {
   RefreshController _refreshController =
-    RefreshController(initialRefresh: true);
+      RefreshController(initialRefresh: true);
 
   @override
   void initState() {
@@ -26,7 +24,7 @@ class _AlarmsPageState extends State<AlarmsPage> {
     AndroidAlarmManager.initialize();
   }
 
-  void _onRefresh() async{
+  void _onRefresh() async {
     Provider.of<AlarmsModel>(context, listen: false).load();
     _refreshController.refreshCompleted();
   }
@@ -59,7 +57,10 @@ class _AlarmsPageState extends State<AlarmsPage> {
                     children: <Widget>[
                       ListTile(
                         title: Text(alarm.time.format(context)),
-                        subtitle: Text("Channel: " + (alarm.channel ?? "") + " | " + (alarm.deviceName ?? "")),
+                        subtitle: Text("Channel: " +
+                            (alarm.channel ?? "") +
+                            " | " +
+                            (alarm.deviceName ?? "")),
                         trailing: PopupMenuButton(
                           itemBuilder: (_) => <PopupMenuItem<AlarmAction>>[
                             new PopupMenuItem<AlarmAction>(
@@ -111,8 +112,7 @@ class _AlarmsPageState extends State<AlarmsPage> {
                   ),
                 ),
               );
-            }
-            else {
+            } else {
               return null;
             }
           },

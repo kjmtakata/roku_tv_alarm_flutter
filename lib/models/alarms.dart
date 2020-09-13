@@ -1,12 +1,12 @@
 import 'dart:convert';
 import 'dart:math';
 
+import 'package:android_alarm_manager/android_alarm_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:android_alarm_manager/android_alarm_manager.dart';
-import 'package:rokutvalarmflutter/main.dart';
 
-import 'alarm.dart';
+import 'package:rokutvalarmflutter/main.dart';
+import 'package:rokutvalarmflutter/models/alarm.dart';
 
 class AlarmsModel with ChangeNotifier {
   List<Alarm> alarms = [];
@@ -15,7 +15,7 @@ class AlarmsModel with ChangeNotifier {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     alarms.clear();
     await prefs.reload();
-    for(String key in prefs.getKeys()) {
+    for (String key in prefs.getKeys()) {
       alarms.add(Alarm.fromJson(jsonDecode(prefs.getString(key))));
     }
     notifyListeners();
@@ -24,8 +24,8 @@ class AlarmsModel with ChangeNotifier {
   void add(Alarm alarm) async {
     DateTime now = DateTime.now();
 
-    DateTime alarmDateTime = DateTime(now.year, now.month,
-        now.day, alarm.time.hour, alarm.time.minute);
+    DateTime alarmDateTime = DateTime(
+        now.year, now.month, now.day, alarm.time.hour, alarm.time.minute);
     if (alarmDateTime.isBefore(now)) {
       alarmDateTime = alarmDateTime.add(Duration(days: 1));
     }
@@ -35,7 +35,8 @@ class AlarmsModel with ChangeNotifier {
     }
 
     AndroidAlarmManager.oneShotAt(alarmDateTime, alarm.id, alarmCallback,
-        exact: true, wakeup: true, rescheduleOnReboot: true).then((success) async {
+            exact: true, wakeup: true, rescheduleOnReboot: true)
+        .then((success) async {
       if (success) {
         alarms.add(alarm);
         SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -74,7 +75,8 @@ class AlarmsModel with ChangeNotifier {
     }
   }
 
-  Alarm getById(int id) => alarms.firstWhere((alarm) => alarm.id == id, orElse: () => null);
+  Alarm getById(int id) =>
+      alarms.firstWhere((alarm) => alarm.id == id, orElse: () => null);
 
   Alarm getByPosition(int i) => this.alarms[i];
 
